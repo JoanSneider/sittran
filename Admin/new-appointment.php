@@ -61,11 +61,11 @@ if (strlen($_SESSION['bpmsaid'] == 0)) {
 									while ($row = mysqli_fetch_array($ret)) {?>
 									<tr>
 										<th scope="row"><?php echo $cnt; ?></th>
-										<td><?php echo $row['NumeroAgenda']; ?></td>
+										<td><?php echo $row['AptNumber']; ?></td>
 										<td><?php echo $row['Name']; ?></td>
 										<td><?php echo $row['Email']; ?></td>
 										<td><?php echo $row['PhoneNumber']; ?></td>
-										<td><?php echo $row['Servicio']; ?></td>
+										<td><?php echo $row['Services']; ?></td>
 										<td><a href="view-appointment.php?viewid=<?php echo $row['ID']; ?>">Acción</a></td>
 									</tr> <?php
 									$cnt = $cnt + 1;} ?>

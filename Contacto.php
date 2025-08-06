@@ -1,37 +1,32 @@
 <?php
 session_start();
 error_reporting(E_ALL);
-ini_set('display_errors', 1); 
-include('Admin/includes/dbconnection.php'); 
-
-// Inicializa $msg. Si hay mensajes en la sesión de una operación previa, los carga.
-// Esto permite que los mensajes persistan después de una redirección.
+ini_set('display_errors', 1);
+include('Admin/includes/dbconnection.php');
 $msg = '';
 if (isset($_SESSION['message_type']) && isset($_SESSION['message_text'])) {
     $msg = '<div class="alert alert-' . $_SESSION['message_type'] . ' alert-dismissible fade show" role="alert">' . $_SESSION['message_text'] . '
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>';
-    // Limpia los mensajes de la sesión para que no se muestren de nuevo en futuras cargas
+
     unset($_SESSION['message_type']);
     unset($_SESSION['message_text']);
 }
 
-if(isset($_POST['submit'])) {
-    // Recoge los datos y usa trim() para eliminar espacios en blanco al inicio/final
+if (isset($_POST['submit'])) {
+
     $Name = trim($_POST['Name']);
     $Email = trim($_POST['Email']);
     $PhoneNumber = trim($_POST['PhoneNumber']);
     $Services = trim($_POST['Services']);
-
-    // --- INICIO: NUEVA VALIDACIÓN PARA CAMPOS VACÍOS EN PHP ---
-    $errors = []; // Array para almacenar errores
+    $errors = [];
 
     if (empty($Name)) {
         $errors[] = 'El Nombre Completo es obligatorio.';
     }
     if (empty($Email)) {
         $errors[] = 'El Email es obligatorio.';
-    } elseif (!filter_var($Email, FILTER_VALIDATE_EMAIL)) { // Validación adicional de formato de email
+    } elseif (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'El Email no es válido.';
     }
     if (empty($PhoneNumber)) {
@@ -41,19 +36,17 @@ if(isset($_POST['submit'])) {
         $errors[] = 'El Servicio es obligatorio.';
     }
 
-    // Si hay errores, no se procesa el formulario y se muestra el mensaje
+
     if (!empty($errors)) {
         $_SESSION['message_type'] = 'danger';
         $_SESSION['message_text'] = 'Por favor, corrige los siguientes errores:<br>' . implode('<br>', $errors);
-        header('Location: Contacto.php'); // Redirige de vuelta para mostrar el mensaje
-        exit(); // Detiene la ejecución del script
+        header('Location: Contacto.php');
+        exit();
     }
-    // --- FIN: NUEVA VALIDACIÓN ---
-
-    // Si no hay errores, se procede con la inserción en la base de datos (código original)
+    
     $aptnumber = mt_rand(100000000, 999999999);
     $stmt = mysqli_prepare($con, "INSERT INTO tblappointment(AptNumber, Name, Email, PhoneNumber, Services) VALUES (?, ?, ?, ?, ?)");
-    
+
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "issss", $aptnumber, $Name, $Email, $PhoneNumber, $Services);
         if (mysqli_stmt_execute($stmt)) {
@@ -62,19 +55,19 @@ if(isset($_POST['submit'])) {
             $_SESSION['aptno'] = $result['AptNumber'];
             $_SESSION['message_type'] = 'success';
             $_SESSION['message_text'] = '¡Cita agendada exitosamente! Tu número de cita es: <strong>' . $_SESSION['aptno'] . '</strong>.';
-            header('Location: Contacto.php'); // Redirige de nuevo a Contacto.php para mostrar éxito
+            header('Location: Contacto.php');
             exit();
         } else {
             $_SESSION['message_type'] = 'danger';
-            $_SESSION['message_text'] = 'Error al agendar la cita: ' . mysqli_error($con); 
-            header('Location: Contacto.php'); // Redirige con mensaje de error
+            $_SESSION['message_text'] = 'Error al agendar la cita: ' . mysqli_error($con);
+            header('Location: Contacto.php');
             exit();
         }
         mysqli_stmt_close($stmt);
     } else {
         $_SESSION['message_type'] = 'danger';
         $_SESSION['message_text'] = 'Error interno del servidor al preparar la consulta: ' . mysqli_error($con);
-        header('Location: Contacto.php'); // Redirige con mensaje de error
+        header('Location: Contacto.php');
         exit();
     }
 }
@@ -133,7 +126,9 @@ if(isset($_POST['submit'])) {
                     </div>
                     <div class="row gx-5 justify-content-center">
                         <div class="col-lg-8 col-xl-6">
-                            <?php if ($msg != '') { echo $msg; } ?>
+                            <?php if ($msg != '') {
+                                echo $msg;
+                            } ?>
 
                             <form id="contactoForm" method="POST" action="">
                                 <div class="form-floating mb-3">
